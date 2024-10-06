@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class Warehouse {
-    private static final ArrayList<Warehouse> warehouses = new ArrayList<Warehouse>();
+    private static final ArrayList<Warehouse> warehouses = new ArrayList<>();
 
     private static final List<ProductRecord> addedProducts = new ArrayList<>();
 
