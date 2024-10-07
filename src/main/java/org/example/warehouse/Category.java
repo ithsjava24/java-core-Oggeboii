@@ -9,7 +9,10 @@ public class Category {
 
 
     private Category(String name) {
-        this.categoryName = name;
+        if(name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Category name can't be null");
+        }
+        this.categoryName = name.substring(0, 1).toUpperCase().concat(name.substring(1));
     }
 
     public String getName() {
@@ -17,9 +20,6 @@ public class Category {
     }
 
     public static Category of(String categoryName) {
-        if(categoryName == null ||categoryName.isEmpty()) {
-            throw new IllegalArgumentException("Category name can't be null");
-        }
         for (Category category : categories) {
             if (category.getName().equals(categoryName)) {
                 return category;
@@ -29,7 +29,6 @@ public class Category {
         categories.add(category);
         return category;
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

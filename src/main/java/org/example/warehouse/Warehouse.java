@@ -2,35 +2,37 @@ package org.example.warehouse;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Warehouse {
-    private static final ArrayList<Warehouse> warehouses = new ArrayList<>();
+    private static final List<Warehouse> warehouses = new ArrayList<>();
 
-    private static final List<ProductRecord> addedProducts = new ArrayList<>();
+    private final List<ProductRecord> addedProducts = new ArrayList<>();
 
-    private static final List<ProductRecord> changedProducts = new ArrayList<>();
+    private final List<ProductRecord> changedProducts = new ArrayList<>();
 
-    private final String warehouseName;
+    private final String name;
 
-    private Warehouse () {
-        this.warehouseName = null;
+    private Warehouse() {
+        this.name = null;
     }
 
-    private Warehouse(String storeName) {
-        this.warehouseName = storeName;
+    private Warehouse(String name) {
+        this.name = name;
     }
 
-    public String getWarehouseName() {
-        return warehouseName;
+    public String getName() {
+        return name;
     }
 
     public static Warehouse getInstance() {
-       return new Warehouse();
+        return new Warehouse();
+
     }
 
     public static Warehouse getInstance(String storeName) {
         for (Warehouse warehouse : warehouses) {
-            if (warehouse.getWarehouseName().equals(storeName)) {
+            if (warehouse.getName().equals(storeName)) {
                 return warehouse;
             }
         }
@@ -40,66 +42,52 @@ public class Warehouse {
     }
 
     public ProductRecord addProduct(UUID uuid, String name, Category category, BigDecimal price) {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
-        if (price == null) {
-            price = BigDecimal.ZERO;
-        }
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("Product name can't be null or empty.");
-        }
-        if (category == null) {
-            throw new IllegalArgumentException("Category can't be null.");
-        }
-        for (ProductRecord productRecord : addedProducts) {
-            if (productRecord.uuid().equals(uuid)){
-                throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates");
+        for (ProductRecord productRecord : getProducts()) {
+            if (productRecord.uuid().equals(uuid)) {
+                throw new IllegalArgumentException("Product with that id already exists, use updateProduct for updates.");
             }
         }
+
         ProductRecord productRecord = new ProductRecord(uuid, name, category, price);
         addedProducts.add(productRecord);
         return productRecord;
     }
 
     public List<ProductRecord> getProducts() {
-        return addedProducts;
+        return Collections.unmodifiableList(addedProducts);
     }
 
-    public ProductRecord getProductById(UUID uuid) {
+    public Optional<ProductRecord> getProductById(UUID uuid) {
+
         if (!addedProducts.isEmpty()) {
             for (ProductRecord productRecord : addedProducts) {
                 if (productRecord.uuid().equals(uuid)) {
-                    return productRecord;
+                    return Optional.of(productRecord);
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public void updateProductPrice(UUID uuid, BigDecimal newPrice) {
-        if (isNotEmpty()) {
-            if (checkID(uuid)) {
-                getProductById(uuid).setNewPrice(newPrice);
-                changedProducts.add(getProductById(uuid));
-            }
+        if (checkID(uuid)) {
+            getProductById(uuid).orElseThrow().setNewPrice(newPrice);
+            changedProducts.add(getProductById(uuid).orElseThrow());
         }
     }
 
-    public void updateProduct(UUID uuid, String newName){
-        if (checkID(uuid)) {
-            getProductById(uuid).setNewName(newName);
-        }
-    }
+//    public void updateProduct(UUID uuid, String newName) {
+//        if (checkID(uuid)) {
+//            getProductById(uuid).orElseThrow().setNewName(newName);
+//            changedProducts.add(getProductById(uuid).orElseThrow());
+//        }
+//    }
 
     public List<ProductRecord> getChangedProducts() {
         if (changedProducts.isEmpty()) {
             return null;
         }
-        return changedProducts;
-    }
-    public boolean isNotEmpty(){
-        return !addedProducts.isEmpty() || !changedProducts.isEmpty();
+        return Collections.unmodifiableList(changedProducts);
     }
 
     public boolean checkID(UUID uuid) {
@@ -108,12 +96,12 @@ public class Warehouse {
                 return true;
             }
         }
-        throw new IllegalArgumentException("Product with that id doesn't exist");
+        throw new IllegalArgumentException("Product with that id doesn't exist.");
     }
 
-    public List <ProductRecord> getProductsBy(Category category){
+    public List<ProductRecord> getProductsBy(Category category) {
         List<ProductRecord> productsByCategory = getProducts();
-        for (ProductRecord productRecord : addedProducts) {
+        for (ProductRecord productRecord : getProducts()) {
             if (productRecord.category().equals(Category.of(String.valueOf(category)))) {
                 productsByCategory.add(productRecord);
             }
@@ -121,8 +109,16 @@ public class Warehouse {
         return productsByCategory;
     }
 
+    public boolean isEmpty() {
+        return addedProducts.isEmpty();
+    }
 
+    public Map<Category, List<ProductRecord>> getProductsGroupedByCategories() {
 
+        Map<Category, List<ProductRecord>> productsOfCategories = addedProducts.stream()
+                .collect(Collectors.groupingBy(ProductRecord::category));
+        Collectors.mapping(ProductRecord::name, Collectors.toList());
 
-
+        return productsOfCategories;
+    }
 }

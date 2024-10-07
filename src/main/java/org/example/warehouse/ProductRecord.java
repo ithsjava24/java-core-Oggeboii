@@ -11,6 +11,18 @@ public class ProductRecord {
     private BigDecimal price;
 
     public ProductRecord(UUID uuid, String name, Category category, BigDecimal price) {
+        if (uuid == null) {
+            uuid = UUID.randomUUID();
+        }
+        if (price == null) {
+            price = BigDecimal.ZERO;
+        }
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Product name can't be null or empty.");
+        }
+        if (category == null) {
+            throw new IllegalArgumentException("Category can't be null.");
+        }
         this.uuid = uuid;
         this.name = name;
         this.category = category;

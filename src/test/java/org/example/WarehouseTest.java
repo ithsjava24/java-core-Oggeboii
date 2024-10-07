@@ -52,7 +52,6 @@ class WarehouseTest {
     }
 
     @Test
-    @Disabled
     @DisplayName("should be the same instance when using the same name")
     @Order(4)
     @Tag("basic")
