@@ -70,7 +70,7 @@ class WarehouseTest {
 
         @BeforeEach
         void createWarehouse() {
-            warehouse = Warehouse.getInstance("New warehouse");
+            warehouse = Warehouse.getInstance();
         }
 
         @Test
