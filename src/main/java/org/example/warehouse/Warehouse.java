@@ -11,10 +11,10 @@ public class Warehouse {
 
     private final List<ProductRecord> changedProducts = new ArrayList<>();
 
-    private final String name;
+    String name;
 
     private Warehouse() {
-        this.name = null;
+
     }
 
     private Warehouse(String name) {
@@ -48,9 +48,9 @@ public class Warehouse {
             }
         }
 
-        ProductRecord productRecord = new ProductRecord(uuid, name, category, price);
-        addedProducts.add(productRecord);
-        return productRecord;
+        ProductRecord product = new ProductRecord(uuid, name, category, price);
+        addedProducts.add(product);
+        return product;
     }
 
     public List<ProductRecord> getProducts() {
@@ -84,9 +84,6 @@ public class Warehouse {
 //    }
 
     public List<ProductRecord> getChangedProducts() {
-        if (changedProducts.isEmpty()) {
-            return null;
-        }
         return Collections.unmodifiableList(changedProducts);
     }
 
@@ -100,9 +97,9 @@ public class Warehouse {
     }
 
     public List<ProductRecord> getProductsBy(Category category) {
-        List<ProductRecord> productsByCategory = getProducts();
+        List<ProductRecord> productsByCategory = new ArrayList<>();
         for (ProductRecord productRecord : getProducts()) {
-            if (productRecord.category().equals(Category.of(String.valueOf(category)))) {
+            if (productRecord.category().getName().equals(category.getName())) {
                 productsByCategory.add(productRecord);
             }
         }

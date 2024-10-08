@@ -98,7 +98,7 @@ class WarehouseTest {
 
         @BeforeEach
         void addingAProduct() {
-            warehouse = Warehouse.getInstance("New warehouse");
+            warehouse = Warehouse.getInstance();
             UUID_milk = UUID.randomUUID();
             addedProduct = warehouse.addProduct(UUID_milk, "Milk", Category.of("Dairy"), BigDecimal.valueOf(999, 2));
         }
@@ -186,7 +186,7 @@ class WarehouseTest {
 
         @BeforeEach
         void addingMultipleProducts() {
-            warehouse = Warehouse.getInstance("New warehouse");
+            warehouse = Warehouse.getInstance();
             addedProducts.add(warehouse.addProduct(UUID.randomUUID(), "Milk", Category.of("Dairy"), BigDecimal.valueOf(999, 2)));
             addedProducts.add(warehouse.addProduct(UUID.randomUUID(), "Apple", Category.of("Fruit"), BigDecimal.valueOf(290, 2)));
             addedProducts.add(warehouse.addProduct(UUID.randomUUID(), "Bacon", Category.of("Meat"), BigDecimal.valueOf(1567, 2)));
